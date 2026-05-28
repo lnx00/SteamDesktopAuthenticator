@@ -28,11 +28,11 @@ jobs:
 
     # 1. Publish Framework-Dependent
     - name: Publish Framework-Dependent
-      run: dotnet publish src/SteamDesktopAuthenticator/SteamDesktopAuthenticator.csproj -c Release -o "${{ github.workspace }}\publish\framework-dependent"
+      run: dotnet publish src/SteamDesktopAuthenticator/SteamDesktopAuthenticator.csproj -c Release -r win-x64 --self-contained false -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=None -o "${{ github.workspace }}\publish\framework-dependent"
 
-    # 2. Publish Self-Contained (Single File)
+    # 2. Publish Self-Contained
     - name: Publish Self-Contained
-      run: dotnet publish src/SteamDesktopAuthenticator/SteamDesktopAuthenticator.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o "${{ github.workspace }}\publish\self-contained"
+      run: dotnet publish src/SteamDesktopAuthenticator/SteamDesktopAuthenticator.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=None -o "${{ github.workspace }}\publish\self-contained"
 
     # 3. Upload the Framework-Dependent build to GitHub Artifacts
     - name: Upload Framework-Dependent Artifact
