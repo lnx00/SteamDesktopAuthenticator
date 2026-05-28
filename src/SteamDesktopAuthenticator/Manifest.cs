@@ -34,7 +34,7 @@ public class Manifest
 
     public static string GetExecutableDir()
     {
-        return Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+        return Path.GetDirectoryName(Environment.ProcessPath);
     }
 
     public static Manifest GetManifest(bool forceLoad = false)

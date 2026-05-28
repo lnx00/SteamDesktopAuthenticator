@@ -83,10 +83,10 @@ internal static class Program
         }
 
         // Warning that this software is no longer supported
-        MessageBox.Show(
+        /*MessageBox.Show(
             "Steam Desktop Authenticator is no longer supported and will not receive any more updates. You should only use Steam's official mobile app to login to your account. Using SDA or any other tool is dangerous and puts your account at risk.",
-            "Steam Desktop Authenticator", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-
+            "Steam Desktop Authenticator", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);*/
+        
         if (man.FirstRun)
         {
             if (man.Entries.Count > 0)
