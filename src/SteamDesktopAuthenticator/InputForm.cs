@@ -1,61 +1,53 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace SteamDesktopAuthenticator
+namespace SteamDesktopAuthenticator;
+
+public partial class InputForm : Form
 {
-    public partial class InputForm : Form
+    public bool Canceled;
+    private bool userClosed = true;
+
+    public InputForm(string label, bool password = false)
     {
-        public bool Canceled = false;
-        private bool userClosed = true;
+        InitializeComponent();
+        labelText.Text = label;
 
-        public InputForm(string label, bool password = false)
+        if (password)
         {
-            InitializeComponent();
-            this.labelText.Text = label;
-
-            if (password)
-            {
-                this.txtBox.PasswordChar = '*';
-            }
+            txtBox.PasswordChar = '*';
         }
+    }
 
-        private void btnAccept_Click(object sender, EventArgs e)
+    private void btnAccept_Click(object sender, EventArgs e)
+    {
+        if (string.IsNullOrEmpty(txtBox.Text))
         {
-            if (string.IsNullOrEmpty(this.txtBox.Text))
-            {
-                this.Canceled = true;
-                this.userClosed = false;
-                this.Close();
-            }
-            else
-            {
-                this.Canceled = false;
-                this.userClosed = false;
-                this.Close();
-            }
+            Canceled = true;
+            userClosed = false;
+            Close();
         }
-
-        private void btnCancel_Click(object sender, EventArgs e)
+        else
         {
-            this.Canceled = true;
-            this.userClosed = false;
-            this.Close();
+            Canceled = false;
+            userClosed = false;
+            Close();
         }
+    }
 
-        private void InputForm_FormClosing(object sender, FormClosingEventArgs e)
+    private void btnCancel_Click(object sender, EventArgs e)
+    {
+        Canceled = true;
+        userClosed = false;
+        Close();
+    }
+
+    private void InputForm_FormClosing(object sender, FormClosingEventArgs e)
+    {
+        if (userClosed)
         {
-            if (this.userClosed)
-            {
-                // Set Canceled = true when the user hits the X button.
-                this.Canceled = true;
-            }
+            // Set Canceled = true when the user hits the X button.
+            Canceled = true;
         }
     }
 }

@@ -1,75 +1,79 @@
-﻿using SteamAuth;
-using System;
+﻿using System;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using SteamAuth;
 
-namespace SteamDesktopAuthenticator
+namespace SteamDesktopAuthenticator;
+
+public partial class PhoneInputForm : Form
 {
-    public partial class PhoneInputForm : Form
+    private SteamGuardAccount Account;
+    public bool Canceled;
+    public string CountryCode;
+    public string PhoneNumber;
+
+    public PhoneInputForm(SteamGuardAccount account)
     {
-        private SteamGuardAccount Account;
-        public string PhoneNumber;
-        public string CountryCode;
-        public bool Canceled;
+        Account = account;
+        InitializeComponent();
+    }
 
-        public PhoneInputForm(SteamGuardAccount account)
+    private void btnSubmit_Click(object sender, EventArgs e)
+    {
+        PhoneNumber = txtPhoneNumber.Text;
+        CountryCode = txtCountryCode.Text;
+
+        if (PhoneNumber[0] != '+')
         {
-            this.Account = account;
-            InitializeComponent();
+            MessageBox.Show("Phone number must start with + and country code.", "Phone Number", MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
+            return;
         }
 
-        private void btnSubmit_Click(object sender, EventArgs e)
+        Close();
+    }
+
+    private void txtPhoneNumber_KeyPress(object sender, KeyPressEventArgs e)
+    {
+        // Allow pasting
+        if (char.IsControl(e.KeyChar))
         {
-            this.PhoneNumber = txtPhoneNumber.Text;
-            this.CountryCode = txtCountryCode.Text;
-
-            if (this.PhoneNumber[0] != '+')
-            {
-                MessageBox.Show("Phone number must start with + and country code.", "Phone Number", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            this.Close();
+            return;
         }
 
-        private void txtPhoneNumber_KeyPress(object sender, KeyPressEventArgs e)
+        // Only allow numbers, spaces, and +
+        var regex = new Regex(@"[^0-9\s\+]");
+        if (regex.IsMatch(e.KeyChar.ToString()))
         {
-            // Allow pasting
-            if (Char.IsControl(e.KeyChar))
-                return;
+            e.Handled = true;
+        }
+    }
 
-            // Only allow numbers, spaces, and +
-            var regex = new Regex(@"[^0-9\s\+]");
-            if (regex.IsMatch(e.KeyChar.ToString()))
-            {
-                e.Handled = true;
-            }
+    private void txtCountryCode_KeyPress(object sender, KeyPressEventArgs e)
+    {
+        // Allow pasting
+        if (char.IsControl(e.KeyChar))
+        {
+            return;
         }
 
-        private void txtCountryCode_KeyPress(object sender, KeyPressEventArgs e)
+        // Only allow letters
+        var regex = new Regex(@"[^a-zA-Z]");
+        if (regex.IsMatch(e.KeyChar.ToString()))
         {
-            // Allow pasting
-            if (Char.IsControl(e.KeyChar))
-                return;
-
-            // Only allow letters
-            var regex = new Regex(@"[^a-zA-Z]");
-            if (regex.IsMatch(e.KeyChar.ToString()))
-            {
-                e.Handled = true;
-            }
+            e.Handled = true;
         }
+    }
 
-        private void txtCountryCode_Leave(object sender, EventArgs e)
-        {
-            // Always uppercase
-            txtCountryCode.Text = txtCountryCode.Text.ToUpper();
-        }
+    private void txtCountryCode_Leave(object sender, EventArgs e)
+    {
+        // Always uppercase
+        txtCountryCode.Text = txtCountryCode.Text.ToUpper();
+    }
 
-        private void btnCancel_Click(object sender, EventArgs e)
-        {
-            this.Canceled = true;
-            this.Close();
-        }
+    private void btnCancel_Click(object sender, EventArgs e)
+    {
+        Canceled = true;
+        Close();
     }
 }

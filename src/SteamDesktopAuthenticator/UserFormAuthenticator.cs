@@ -1,64 +1,66 @@
-﻿using SteamAuth;
-using SteamKit2.Authentication;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Windows.Forms;
+using SteamAuth;
+using SteamKit2.Authentication;
 
-namespace SteamDesktopAuthenticator
+namespace SteamDesktopAuthenticator;
+
+internal class UserFormAuthenticator : IAuthenticator
 {
-    internal class UserFormAuthenticator : IAuthenticator
+    private readonly SteamGuardAccount account;
+    private int deviceCodesGenerated;
+
+    public UserFormAuthenticator(SteamGuardAccount account)
     {
-        private SteamGuardAccount account;
-        private int deviceCodesGenerated = 0;
+        this.account = account;
+    }
 
-        public UserFormAuthenticator(SteamGuardAccount account)
-        {
-            this.account = account;
-        }
+    public Task<bool> AcceptDeviceConfirmationAsync()
+    {
+        return Task.FromResult(false);
+    }
 
-        public Task<bool> AcceptDeviceConfirmationAsync()
+    public async Task<string> GetDeviceCodeAsync(bool previousCodeWasIncorrect)
+    {
+        // If a code fails wait 30 seconds for a new one to regenerate
+        if (previousCodeWasIncorrect)
         {
-            return Task.FromResult(false);
-        }
-
-        public async Task<string> GetDeviceCodeAsync(bool previousCodeWasIncorrect)
-        {
-            // If a code fails wait 30 seconds for a new one to regenerate
-            if (previousCodeWasIncorrect)
+            // After 2 tries tell the user that there seems to be an issue
+            if (deviceCodesGenerated > 2)
             {
-                // After 2 tries tell the user that there seems to be an issue
-                if (deviceCodesGenerated > 2)
-                    MessageBox.Show("There seems to be an issue logging into your account with these two factor codes. Are you sure SDA is still your authenticator?");
-
-                await Task.Delay(30000);
+                MessageBox.Show(
+                    "There seems to be an issue logging into your account with these two factor codes. Are you sure SDA is still your authenticator?");
             }
 
-            string deviceCode;
-
-            if (account == null)
-            {
-                MessageBox.Show("This account already has an authenticator linked. You must remove that authenticator to add SDA as your authenticator.", "Steam Login", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return null;
-            }
-            else
-            {
-                deviceCode = await account.GenerateSteamGuardCodeAsync();
-                deviceCodesGenerated++;
-            }
-
-            return deviceCode;
+            await Task.Delay(30000);
         }
 
-        public Task<string> GetEmailCodeAsync(string email, bool previousCodeWasIncorrect)
+        string deviceCode;
+
+        if (account == null)
         {
-            string message = "Enter the code sent to your email:";
-            if (previousCodeWasIncorrect)
-            {
-                message = "The code you provided was invalid. Enter the code sent to your email:";
-            }
-
-            InputForm emailForm = new InputForm(message);
-            emailForm.ShowDialog();
-            return Task.FromResult(emailForm.txtBox.Text);
+            MessageBox.Show(
+                "This account already has an authenticator linked. You must remove that authenticator to add SDA as your authenticator.",
+                "Steam Login", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            return null;
         }
+
+        deviceCode = await account.GenerateSteamGuardCodeAsync();
+        deviceCodesGenerated++;
+
+        return deviceCode;
+    }
+
+    public Task<string> GetEmailCodeAsync(string email, bool previousCodeWasIncorrect)
+    {
+        var message = "Enter the code sent to your email:";
+        if (previousCodeWasIncorrect)
+        {
+            message = "The code you provided was invalid. Enter the code sent to your email:";
+        }
+
+        var emailForm = new InputForm(message);
+        emailForm.ShowDialog();
+        return Task.FromResult(emailForm.txtBox.Text);
     }
 }

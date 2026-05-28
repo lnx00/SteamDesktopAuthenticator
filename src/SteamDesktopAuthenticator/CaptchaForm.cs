@@ -1,46 +1,33 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace SteamDesktopAuthenticator
+namespace SteamDesktopAuthenticator;
+
+public partial class CaptchaForm : Form
 {
-    public partial class CaptchaForm : Form
+    public bool Canceled;
+    public string CaptchaGID = "";
+    public string CaptchaURL = "";
+
+    public CaptchaForm(string GID)
     {
-        public bool Canceled = false;
-        public string CaptchaGID = "";
-        public string CaptchaURL = "";
-        public string CaptchaCode
-        {
-            get
-            {
-                return this.txtBox.Text;
-            }
-        }
+        CaptchaGID = GID;
+        CaptchaURL = "https://steamcommunity.com/public/captcha.php?gid=" + GID;
+        InitializeComponent();
+        pictureBoxCaptcha.Load(CaptchaURL);
+    }
 
-        public CaptchaForm(string GID)
-        {
-            this.CaptchaGID = GID;
-            this.CaptchaURL = "https://steamcommunity.com/public/captcha.php?gid=" + GID;
-            InitializeComponent();
-            this.pictureBoxCaptcha.Load(CaptchaURL);
-        }
+    public string CaptchaCode => txtBox.Text;
 
-        private void btnAccept_Click(object sender, EventArgs e)
-        {
-            this.Canceled = false;
-            this.Close();
-        }
+    private void btnAccept_Click(object sender, EventArgs e)
+    {
+        Canceled = false;
+        Close();
+    }
 
-        private void btnCancel_Click(object sender, EventArgs e)
-        {
-            this.Canceled = true;
-            this.Close();
-        }
+    private void btnCancel_Click(object sender, EventArgs e)
+    {
+        Canceled = true;
+        Close();
     }
 }

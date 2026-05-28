@@ -1,18 +1,11 @@
-﻿using SteamAuth;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 using System.Windows.Forms;
+using SteamAuth;
 
-namespace SteamDesktopAuthenticator
+namespace SteamDesktopAuthenticator;
+
+public class ConfirmationButton : Button
 {
-    public class ConfirmationButton : Button
-    {
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public Confirmation Confirmation { get; set; }
-    }
-
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public Confirmation Confirmation { get; set; }
 }
