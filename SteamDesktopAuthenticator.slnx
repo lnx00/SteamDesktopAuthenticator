@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="lib/SteamAuth/SteamAuth/SteamAuth.csproj" />
+  <Project Path="Steam Desktop Authenticator/Steam Desktop Authenticator.csproj" />
+</Solution>
